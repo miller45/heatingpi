@@ -2,7 +2,7 @@ import oled
 import tempsensors
 
 myOled = oled.OLED()
-myOled.sayHello()
+myOled.showSplashScreen()
 
 mySens = tempsensors.TempSensors("28-0317607252ff","28-051760bdebff")
 

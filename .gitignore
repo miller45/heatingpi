@@ -103,3 +103,6 @@ ENV/
 #
 .idea
 .idea/
+#damn windows thumbs
+Thumbs.db
+Thumbs.db:encryptable
