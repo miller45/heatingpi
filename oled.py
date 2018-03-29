@@ -22,7 +22,7 @@ class OLED:
         self.top = self.padding
         self.bottom = self.height - self.padding
         self.font = ImageFont.load_default()
-        self.robotoFont = ImageFont.truetype("Roboto-Black.ttf", self.robotoFontLineHeight)
+        self.robotoFont = ImageFont.truetype("fonts/Roboto-Black.ttf", self.robotoFontLineHeight)
 
     def ping(self):
         print("ping from oled")

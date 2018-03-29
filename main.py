@@ -2,6 +2,8 @@ import oled
 import tempsensors
 import time
 
+print("Starting HeatingPI")
+
 myOled = oled.OLED()
 myOled.showSplashScreen()
 
