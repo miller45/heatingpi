@@ -7,10 +7,8 @@ from PIL import ImageFont
 
 class OLED:
     DC = 23
-    LINEHEIGHT = 8
-    vtFontLineHeight = 16
-    uniFontLineHeight = 16
-    robotoFontLineHeight=16
+    fontHeight = 8
+    robotoFontLineHeight=18
 
     def __init__(self):
         self.disp = Adafruit_SSD1306.SSD1306_128_32(rst=None)
@@ -24,8 +22,6 @@ class OLED:
         self.top = self.padding
         self.bottom = self.height - self.padding
         self.font = ImageFont.load_default()
-        self.vtFont = ImageFont.truetype("VT323-Regular.ttf", self.vtFontLineHeight)
-        self.uniFont = ImageFont.truetype("uni0553-webfont.ttf", self.uniFontLineHeight)
         self.robotoFont = ImageFont.truetype("Roboto-Black.ttf", self.robotoFontLineHeight)
 
     def ping(self):
@@ -38,9 +34,21 @@ class OLED:
         x = 0
         y = self.top;
         self.draw.text((x, y), "Welcome to...", font=self.font, fill=255)
-        y += self.LINEHEIGHT
+        y += self.fontHeight
         self.draw.text((x, y), "Heating PI", font=self.robotoFont, fill=255)
         y += self.robotoFontLineHeight
         # self.draw.text((x, self.top + self.LINEHEIGHT * 1),"w "+str(self.width)+" h "+str(self.height), font=self.uniFont, fill=255)
         self.disp.image(self.image)
         self.disp.display()
+    def showTemperatures(self,t1,t2):
+        x=0
+        y=0
+        self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
+        self.draw.text((x, self.top),"IN "+format(t1,".1f")+" OUT "+format(t2,'.1f'), font=self.font, fill=255)
+        y+=self.fontHeight
+        self.draw.text((x, y), "DIFF " + format(t2-t1,".1f") , font=self.robotoFont, fill=255)
+        #y+=self.robotoFontLineHeight
+        #self.draw.text((x, y), "T2 " + str(t2) , font=self.robotoFont, fill=255)
+        self.disp.image(self.image)
+        self.disp.display()
+

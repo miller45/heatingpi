@@ -1,5 +1,7 @@
 import re,os
 class TempSensors:
+    disableSensor1 = False
+    disableSensor2 = False 
     def __init__(self, w1name1, w1name2):
         self.sensor1path = "/sys/bus/w1/devices/" + w1name1 + "/w1_slave"
         self.sensor2path = "/sys/bus/w1/devices/" + w1name2 + "/w1_slave"
