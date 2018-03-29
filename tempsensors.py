@@ -1,14 +1,29 @@
 import re,os
 class TempSensors:
+    disableSensor1 = False
+    disableSensor2 = False 
     def __init__(self, w1name1, w1name2):
         self.sensor1path = "/sys/bus/w1/devices/" + w1name1 + "/w1_slave"
         self.sensor2path = "/sys/bus/w1/devices/" + w1name2 + "/w1_slave"
-        dummy = 1
 
     def read_temperature1(self):
-        return self.read_sensor(self.sensor1path)
+        ret = "-99"
+        if self.disableSensor1:
+            return ret
+        try: 
+            ret = self.read_sensor(self.sensor1path)
+        except:
+            self.disableSensor1 = True
+        return ret
     def read_temperature2(self):
-        return self.read_sensor(self.sensor2path)
+        ret = "-99"
+        if self.disableSensor2:
+            return ret
+        try: 
+            ret = self.read_sensor(self.sensor2path)
+        except:
+            self.disableSensor2 = True
+        return ret
 
     def read_sensor(self,path):
         value = "U"
