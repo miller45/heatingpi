@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import oled
 import tempsensors
 import time
