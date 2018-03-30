@@ -22,8 +22,6 @@ class RelayBoard:
         GPIO.output(self.Relay_Ch1,GPIO.HIGH)
     def cleanup(self):
         GPIO.cleanup()
-    def ping(self):
-        print("ping")
         
         
         
