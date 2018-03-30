@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import oled
 import tempsensors
+import relay
 import time
 
 print("Starting HeatingPI")
@@ -10,10 +11,15 @@ myOled.showSplashScreen()
 
 mySens = tempsensors.TempSensors("28-0317607252ff","28-051760bdebff")
 
-while True:
-    time.sleep(1)
-    t1=float(mySens.read_temperature1())
-    t2=float(mySens.read_temperature2())
-    myOled.showTemperatures(t1,t2)
-
+myRelay = relay.RelayBoard()
+myRelay.ping()
+try:
+    while True:
+        time.sleep(1)
+        t1=float(mySens.read_temperature1())
+        t2=float(mySens.read_temperature2())
+        myOled.showTemperatures(t1,t2)
+except:
+    myRelay.cleanup()
+    
 
