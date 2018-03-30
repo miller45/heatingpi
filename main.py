@@ -1,10 +1,5 @@
-#!/usr/bin/env python
 import oled
 import tempsensors
-import relay
-import time
-
-print("Starting HeatingPI")
 
 myOled = oled.OLED()
 myOled.showSplashScreen()
