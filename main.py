@@ -4,8 +4,9 @@ import relay
 import time
 import mqttcom
 import configparser
+import math
 
-print("Starting HeatingPI")
+print("Starting HeatingPI V0.2")
 
 hpConfig = configparser.ConfigParser()
 hpConfig.read("config.ini")
@@ -23,16 +24,18 @@ myMQTT.ping()
 
 rotate = 0
 lstateCounter = 0
-
+ltime = 0
 
 try:
     while True:
-        time.sleep(1)
-        t1 = float(mySens.read_temperature1())
-        t2 = float(mySens.read_temperature2())
-        myMQTT.sendTemperature("T1", t1)
-        myMQTT.sendTemperature("T2", t2)
-        myOled.showTemperatures(t1, t2)
+        currtime = math.trunc(time.time() * 1000) # time in microseconds
+        if currtime - 1000 > ltime:
+            ltime = currtime
+            t1 = float(mySens.read_temperature1())
+            t2 = float(mySens.read_temperature2())
+            myMQTT.sendTemperature("T1", t1)
+            myMQTT.sendTemperature("T2", t2)
+            myOled.showTemperatures(t1, t2)
         if lstateCounter != myMQTT.stateCounter:
             lstateCounter = myMQTT.stateCounter
             if myMQTT.relay1State:
