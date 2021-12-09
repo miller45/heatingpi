@@ -1,4 +1,5 @@
 import re,os
+import time
 class TempSensors:
     disableSensor1 = False
     disableSensor2 = False 
