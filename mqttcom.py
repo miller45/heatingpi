@@ -1,7 +1,6 @@
 import paho.mqtt.client as mqtt
 import posixpath as path
 
-
 class MQTTComm:
     relay1State = False
     relay2State = False
@@ -11,8 +10,9 @@ class MQTTComm:
     def __init__(self, server_address, base_topic):
         self.server_address = server_address
         self.base_topic = base_topic
-        self.actuator_topic = path.join(base_topic, "actuators")
-        self.sensors_topic = path.join(base_topic, "sensors")
+        self.actuator_topic = path.join("cmnd", base_topic, "ACTUATOR")
+        self.sensors_topic = path.join("tele", base_topic, "SENSOR")
+        self.result_topic = path.join("stat", base_topic, "RESULT")
         print(self.sensors_topic)
 
         self.client = mqtt.Client()
@@ -34,7 +34,8 @@ class MQTTComm:
         )  # the hash symbol means we get all message from sensors*
 
     def ping(self):
-        print("ping from oled")
+        print("ping from mqtt")
+        self.client.publish(path.join(self.sensors_topic, "STATUS"), "Ping from heatingpi")
 
     def on_connect(self, client, userdata, flags, rc):
         print("Connect with result code " + str(rc))
@@ -44,10 +45,13 @@ class MQTTComm:
         (head, tail) = path.split(msg.topic)
         if (tail == "R1"):
             self.relay1State = (msg.payload == "1")
+            self.client.publish(self.result_topic, '{"RELAY1":"'+("ON" if self.relay1State else "OFF")+'"}')
         elif (tail == "R2"):
             self.relay2State = (msg.payload == "1")
+            self.client.publish(self.result_topic, '{"RELAY2":"' + ("ON" if self.relay2State else "OFF") + '"}')
         elif (tail == "R3"):
             self.relay3State = (msg.payload == "1")
+            self.client.publish(self.result_topic, '{"RELAY3":"' + ("ON" if self.relay3State else "OFF") + '"}')
         elif tail == "VALVE":
             if msg.payload == "HOTTER":
                 self.relay2State = True
