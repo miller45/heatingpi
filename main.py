@@ -14,7 +14,8 @@ hpConfig.read("config.ini")
 myOled = oled.OLED()
 myOled.showSplashScreen()
 
-mySens = tempsensors.TempSensors("28-3c01f0964f8c", "28-3c01f0965e56")
+# mySens = tempsensors.TempSensors("28-3c01f0964f8c", "28-3c01f0965e56")
+mySens = tempsensors.TempSensors(hpConfig["sensors"]["T1"], hpConfig["sensors"]["T2"])
 # mySens = tempsensors.TempSensors("28-0317607252ff", "28-051760bdebff")
 
 relayBoard = relay.RelayBoard()
