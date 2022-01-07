@@ -83,5 +83,5 @@ while onon:
 
     except:
         relayBoard.cleanup()
-        print("restarting")
-        sleep(5)
+        print("exception occurred restarting after 5 secs")
+        time.sleep(5)
