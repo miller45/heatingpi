@@ -2,10 +2,14 @@ import re,os
 import time
 class TempSensors:
     disableSensor1 = False
-    disableSensor2 = False 
-    def __init__(self, w1name1, w1name2):
+    disableSensor2 = False
+    disableSensor3 = False
+    disableSensor4 = False
+    def __init__(self, w1name1, w1name2, wlname3, wlname4):
         self.sensor1path = "/sys/bus/w1/devices/" + w1name1 + "/w1_slave"
         self.sensor2path = "/sys/bus/w1/devices/" + w1name2 + "/w1_slave"
+        self.sensor3path = "/sys/bus/w1/devices/" + wlname3 + "/w1_slave"
+        self.sensor4path = "/sys/bus/w1/devices/" + wlname4 + "/w1_slave"
 
     def read_temperature1(self):
         ret = "-99"
@@ -24,6 +28,26 @@ class TempSensors:
             ret = self.read_sensor(self.sensor2path)
         except:
             self.disableSensor2 = True
+        return ret
+
+    def read_temperature3(self):
+        ret = "-99"
+        if self.disableSensor3:
+            return ret
+        try:
+            ret = self.read_sensor(self.sensor3path)
+        except:
+            self.disableSensor3 = True
+        return ret
+
+    def read_temperature4(self):
+        ret = "-99"
+        if self.disableSensor4:
+            return ret
+        try:
+            ret = self.read_sensor(self.sensor4path)
+        except:
+            self.disableSensor4 = True
         return ret
 
     def read_sensor(self,path):
