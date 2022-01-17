@@ -58,6 +58,19 @@ while onon:
                 t3 = float(mySens.read_temperature3())
                 t4 = float(mySens.read_temperature4())
                 t5 = float(ard.readRuecklauf())
+
+                #regeln
+                hysteresis=6
+                offteresis=3
+                SV=t3
+                SR=t5
+                SS=t4
+                if (SS + hysteresis) <SR:
+                    mqttClient.switchOnOff("52","ON")
+                elif (SS + offteresis) >= SR:
+                    mqttClient.switchOnOff("52", "OFF")
+
+
                 #myOled.showTemperatures(t1, t2)
             if currtime - MQTTSpamPeriod > spamltime:
                 spamltime = currtime
@@ -66,6 +79,7 @@ while onon:
                 mqttClient.sendTemperature("T3", t3)
                 mqttClient.sendTemperature("T4", t4)
                 mqttClient.sendTemperature("T5", t5)
+
             if lstateCounter != mqttClient.stateCounter:
                 lstateCounter = mqttClient.stateCounter
                 if mqttClient.relay1State:
@@ -80,8 +94,12 @@ while onon:
                     relayBoard.switchRelay3On()
                 else:
                     relayBoard.switchRelay3Off()
-
+    except BaseException as error:
+        relayBoard.cleanup()
+        print('An exception occurred: {}'.format(error))
+        print("restarting after 5 secs")
+        time.sleep(5)
     except:
         relayBoard.cleanup()
-        print("exception occurred restarting after 5 secs")
-        time.sleep(5)
+        print("exception occurred restarting after 1 secs")
+        time.sleep(1)

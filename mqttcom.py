@@ -5,6 +5,7 @@ class MQTTComm:
     relay1State = False
     relay2State = False
     relay3State = False
+    swState={}
     stateCounter = 0
 
     def __init__(self, server_address, base_topic):
@@ -37,6 +38,19 @@ class MQTTComm:
         print("ping from mqtt")
         self.client.publish(path.join(self.sensors_topic, "STATUS"), "Ping from heatingpi")
 
+    def switchOnOff(self, which,what):
+        if which in self.swState:
+            if self.swState[which]!=what:
+                self.client.publish("cmnd/sonoff/" + which + "/POWER", what)
+                self.swState[which]=what
+                print("switching "+which+" "+what)
+        else:
+            self.client.publish("cmnd/sonoff/" + which + "/POWER", what)
+            self.swState[which] = what
+            print("switching " + which + " " + what)
+
+
+
     def on_connect(self, client, userdata, flags, rc):
         print("Connect with result code " + str(rc))
 
@@ -57,8 +71,8 @@ class MQTTComm:
                 self.relay2State = True
                 self.relay1State = False
             elif msg.payload == "COLDER":
-                self.relay2State = True
-                self.relay1State = False
+                self.relay2State = False
+                self.relay1State = True
             elif msg.payload == "STOP":
                 self.relay2State = False
                 self.relay1State = False
