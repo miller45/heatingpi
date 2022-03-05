@@ -7,7 +7,7 @@ class RelayBoard:
     Relay_Ch3 = 21
 
     def __init__(self):
-        GPIO.setwarnings(False)
+        GPIO.setwarnings(True)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.Relay_Ch1,GPIO.OUT)
         GPIO.setup(self.Relay_Ch2,GPIO.OUT)
@@ -18,14 +18,18 @@ class RelayBoard:
     
     def switchRelay1On(self):
         GPIO.output(self.Relay_Ch1,GPIO.LOW) # yes LOW means switching the relay on  weird but it is so
+        print("switchRelay1On")
+
     def switchRelay1Off(self):
         GPIO.output(self.Relay_Ch1,GPIO.HIGH) # yes HIGH means switching the relay off  weird but it is so
+        print("switchRelay1Off")
 
     def switchRelay2On(self):
         GPIO.output(self.Relay_Ch2, GPIO.LOW)
+        print("switchRelay2On")
     def switchRelay2Off(self):
         GPIO.output(self.Relay_Ch2, GPIO.HIGH)
-
+        print("switchRelay2Off")
     def switchRelay3On(self):
         GPIO.output(self.Relay_Ch3, GPIO.LOW)
 
