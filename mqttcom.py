@@ -21,6 +21,7 @@ class MQTTComm:
         self.stats_topic = path.join("tele", base_topic, "STATS")
         self.controlstate_topic = path.join("tele", base_topic, "STATS")
         self.result_topic = path.join("stat", base_topic, "RESULT")
+        self.lwt_topic = path.join("stat", base_topic, "LWT")
         # self.slog(self.sensors_topic)
 
         self.client = mqtt.Client()
@@ -34,6 +35,7 @@ class MQTTComm:
 
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
+        self.client.will_set(self.lwt_topic, payload="Offline", qos=0, retain=True)
         self.client.connect(self.server_address, 1883, 60)
         self.client.loop_start()
         self.client.subscribe(
@@ -60,6 +62,7 @@ class MQTTComm:
 
     def on_connect(self, client, userdata, flags, rc):
         self.slog("Connect with result code {}".format(rc))
+        self.client.publish(self.lwt_topic, payload="Online", qos=0, retain=True)
 
     def on_message(self, client, userdata, msg):
 
@@ -87,12 +90,6 @@ class MQTTComm:
                     self.had_self_state = True
                     self.set_control(msg.payload)
                 self.stateCounter = self.stateCounter + 1
-
-
-
-
-
-
 
     def set_valve(self, towhat):
         if towhat == "HOTTER":
