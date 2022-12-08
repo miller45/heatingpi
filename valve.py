@@ -10,9 +10,17 @@ class Valve(relay.RelayBoard):
         self.ANGLESPEED = 90/120 # per second
 
     def update(self, currtimems):
-        self.direction = self.__derive_direction()
-        self.current_position = self.__derive_position(self.current_position, currtimems,self.lasttimems, self.direction)
+        had_change = False
+        next_dir= self.__derive_direction()
+        if self.direction != next_dir:
+            had_change = True
+        self.direction = next_dir
+        next_pos = self.__derive_position(self.current_position, currtimems,self.lasttimems, self.direction)
+        if self.current_position != next_pos:
+            had_change = True
+        self.current_position = next_pos
         self.lasttimems = currtimems
+        return had_change
 
     def __derive_direction(self):
         # derive direction from current relay state. Might look weird (and can be prone to error if the logic of relays is changed)

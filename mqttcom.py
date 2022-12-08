@@ -22,6 +22,7 @@ class MQTTComm:
         self.controlstate_topic = path.join("tele", base_topic, "STATS")
         self.result_topic = path.join("stat", base_topic, "RESULT")
         self.lwt_topic = path.join("stat", base_topic, "LWT")
+        self.position_topic = path.join("stat",base_topic, "POSITION") # position of mixer
         # self.slog(self.sensors_topic)
 
         self.client = mqtt.Client()
@@ -119,6 +120,9 @@ class MQTTComm:
 
     def send_stats(self, message):
         self.client.publish(self.stats_topic, message)
+        
+    def send_position(self, message):
+        self.client.publish(self.position_topic, message)
 
     def slog(self, msg):
         syslog.syslog(msg)

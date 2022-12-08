@@ -200,7 +200,9 @@ while onon:
 
                 if do_control_solar != mqttClient.control_solar:
                     do_control_solar = mqttClient.control_solar
-            relayBoard.update(currtime) # update position of mixing valve based on time and relay state
+            had_change = relayBoard.update(currtime) # update position of mixing valve based on time and relay state
+            if had_change:
+                mqttClient.send_position(relayBoard.current_position)
             time.sleep(0.001)
     except KeyboardInterrupt:
         print('program cancelled by keyboard')
