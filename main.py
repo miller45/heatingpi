@@ -20,8 +20,6 @@ ard = arduino.Arduino(serialp)
 hpConfig = configparser.ConfigParser()
 hpConfig.read("config.ini")
 
-# myOled = oled.OLED()
-# myOled.showSplashScreen()
 
 # mySens = tempsensors.TempSensors("28-3c01f0964f8c", "28-3c01f0965e56")
 mySens = tempsensors.TempSensors(
