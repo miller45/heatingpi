@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+import syslog
 
 
 class RelayBoard:
@@ -18,26 +19,31 @@ class RelayBoard:
     
     def switchRelay1On(self):
         GPIO.output(self.Relay_Ch1,GPIO.LOW) # yes LOW means switching the relay on  weird but it is so
-        print("switchRelay1On")
+        self.slog("switchRelay1On")
 
     def switchRelay1Off(self):
         GPIO.output(self.Relay_Ch1,GPIO.HIGH) # yes HIGH means switching the relay off  weird but it is so
-        print("switchRelay1Off")
+        self.slog("switchRelay1Off")
 
     def switchRelay2On(self):
         GPIO.output(self.Relay_Ch2, GPIO.LOW)
-        print("switchRelay2On")
+        self.slog("switchRelay2On")
+
     def switchRelay2Off(self):
         GPIO.output(self.Relay_Ch2, GPIO.HIGH)
-        print("switchRelay2Off")
+        self.slog("switchRelay2Off")
+
     def switchRelay3On(self):
         GPIO.output(self.Relay_Ch3, GPIO.LOW)
+        self.slog("switchRelay3On")
 
     def switchRelay3Off(self):
         GPIO.output(self.Relay_Ch3, GPIO.HIGH)
+        self.slog("switchRelay3Off")
 
     def cleanup(self):
         GPIO.cleanup()
-        
-        
-        
+
+    def slog(self, msg):
+        syslog.syslog(msg)
+        print(msg)
