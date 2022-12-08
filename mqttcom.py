@@ -83,6 +83,8 @@ class MQTTComm:
             elif tail == "SETCONTROL":
                 self.had_self_state = True  # see below at CONTROLSTATE: avoid setting state again if received from retained message
                 self.set_control(msg.payload)
+            elif tail == "SETPOSITION":
+                self.set_valve_postion(msg.payload)
             self.slog(msg.topic + " " + str(msg.payload))
             self.stateCounter = self.stateCounter + 1
         if head == self.state_topic:
@@ -90,6 +92,7 @@ class MQTTComm:
                 if not self.had_self_state:
                     self.had_self_state = True
                     self.set_control(msg.payload)
+
                 self.stateCounter = self.stateCounter + 1
 
     def set_valve(self, towhat):
@@ -102,6 +105,8 @@ class MQTTComm:
         elif towhat == "STOP":
             self.relay2State = False
             self.relay1State = False
+    def set_valve_position(self, towhat):
+        pass
 
     def set_control(self, towhat):
         if towhat == "OFF":
@@ -120,7 +125,7 @@ class MQTTComm:
 
     def send_stats(self, message):
         self.client.publish(self.stats_topic, message)
-        
+
     def send_position(self, message):
         self.client.publish(self.position_topic, message)
 
