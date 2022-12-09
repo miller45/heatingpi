@@ -1,5 +1,9 @@
-import RPi.GPIO as GPIO
 import syslog
+
+try:
+    import RPi.GPIO as GPIO
+except:
+    import Mock.GPIO as GPIO
 
 
 class RelayBoard:
