@@ -11,6 +11,7 @@ class MQTTComm:
 
     control_solar = True
     had_self_state = False
+    valve_target_position = 10
 
     def __init__(self, server_address, base_topic):
         self.server_address = server_address
@@ -84,7 +85,7 @@ class MQTTComm:
                 self.had_self_state = True  # see below at CONTROLSTATE: avoid setting state again if received from retained message
                 self.set_control(msg.payload)
             elif tail == "SETPOSITION":
-                self.set_valve_postion(msg.payload)
+                self.set_valve_target_position(msg.payload)
             self.slog(msg.topic + " " + str(msg.payload))
             self.stateCounter = self.stateCounter + 1
         if head == self.state_topic:
@@ -105,8 +106,12 @@ class MQTTComm:
         elif towhat == "STOP":
             self.relay2State = False
             self.relay1State = False
-    def set_valve_position(self, towhat):
-        pass
+
+    def set_valve_target_position(self, towhat):
+        if type(towhat) == "string":
+           self.valve_target_position = int(towhat)
+        else:
+           self.valve_target_position = towhat
 
     def set_control(self, towhat):
         if towhat == "OFF":
