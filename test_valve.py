@@ -3,6 +3,7 @@ import valve
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+
 class TestValveClass(unittest.TestCase):
 
     def test_upper(self):

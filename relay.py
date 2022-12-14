@@ -1,5 +1,4 @@
-import syslog
-
+import resyslog
 try:
     import RPi.GPIO as GPIO
 except:
@@ -59,5 +58,5 @@ class RelayBoard:
         GPIO.cleanup()
 
     def slog(self, msg):
-        syslog.syslog(msg)
+        resyslog.syslog(msg)
         print(msg)
