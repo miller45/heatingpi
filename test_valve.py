@@ -93,3 +93,17 @@ class TestValveClass(unittest.TestCase):
         v.switchRelay1On()
         v.update(nexttime)
         self.assertEqual(75, v.current_position)
+
+    def test_position_hinundher1(self):
+        v = valve.Valve()
+        v.set_position(90)
+        nexttime = v.lasttimems + 20 * 1000
+        v.switchRelay1On()
+        v.update(nexttime)
+        v.switchRelay1Off()
+        self.assertEqual(75, v.current_position)
+        v.switchRelay2On()
+        nexttime = v.lasttimems + 10 * 1000
+        v.update(nexttime)
+        self.assertEqual(82.5, v.current_position)
+        v.switchRelay2Off()
