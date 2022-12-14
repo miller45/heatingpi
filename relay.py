@@ -9,9 +9,9 @@ class RelayBoard:
     Relay_Ch1 = 26
     Relay_Ch2 = 20
     Relay_Ch3 = 21
-    Relay_State1 = 0
-    Relay_State2 = 0
-    Relay_State3 = 0
+    Relay_State1 = False
+    Relay_State2 = False
+    Relay_State3 = False
     Last_StateChangeMS = 0
 
     def __init__(self):
