@@ -3,7 +3,8 @@ try:
     import RPi.GPIO as GPIO
 except:
     import Mock.GPIO as GPIO
-
+import time
+import math
 
 class RelayBoard:
     Relay_Ch1 = 26
@@ -24,34 +25,43 @@ class RelayBoard:
         GPIO.output(self.Relay_Ch2, GPIO.HIGH)
         GPIO.output(self.Relay_Ch3, GPIO.HIGH)
 
+    def _getcurrms(self):
+        return math.trunc(time.time() * 1000)
+
     def switchRelay1On(self):
         GPIO.output(self.Relay_Ch1, GPIO.LOW)  # yes LOW means switching the relay on  weird but it is so
         self.Relay_State1 = True
+        self.update(self._getcurrms())
         self.slog("switchRelay1On")
 
     def switchRelay1Off(self):
         GPIO.output(self.Relay_Ch1, GPIO.HIGH)  # yes HIGH means switching the relay off  weird but it is so
         self.Relay_State1 = False
+        self.update(self._getcurrms())
         self.slog("switchRelay1Off")
 
     def switchRelay2On(self):
         GPIO.output(self.Relay_Ch2, GPIO.LOW)
         self.Relay_State2 = True
+        self.update(self._getcurrms())
         self.slog("switchRelay2On")
 
     def switchRelay2Off(self):
         GPIO.output(self.Relay_Ch2, GPIO.HIGH)
         self.Relay_State2 = False
+        self.update(self._getcurrms())
         self.slog("switchRelay2Off")
 
     def switchRelay3On(self):
         GPIO.output(self.Relay_Ch3, GPIO.LOW)
         self.Relay_State3 = True
+        self.update(self._getcurrms())
         self.slog("switchRelay3On")
 
     def switchRelay3Off(self):
         GPIO.output(self.Relay_Ch3, GPIO.HIGH)
         self.Relay_State3 = False
+        self.update(self._getcurrms())
         self.slog("switchRelay3Off")
 
     def cleanup(self):
@@ -60,3 +70,6 @@ class RelayBoard:
     def slog(self, msg):
         resyslog.syslog(msg)
         print(msg)
+
+    def update(self, currtimems):
+        pass

@@ -22,6 +22,10 @@ class Valve(relay.RelayBoard):
         self.lasttimems = currtimems
         return had_change
 
+    def set_position(self, newpos):
+        self.current_position = newpos
+        self.lasttimems = self._getcurrms()
+
     def __derive_direction(self):
         # derive direction from current relay state. Might look weird (and can be prone to error if the logic of relays is changed)
         # but it makes sure the direction is derived the reality of the relays on not a top level assumption
