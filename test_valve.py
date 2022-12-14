@@ -8,6 +8,7 @@ import time
 FULLTURNTIME = 120
 
 
+
 class TestValveClass(unittest.TestCase):
 
     def test_defaultposition(self):
