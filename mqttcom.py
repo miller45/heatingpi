@@ -6,7 +6,7 @@ class MQTTComm:
     relay1State = False
     relay2State = False
     relay3State = False
-    swState = {}
+    swState={}
     stateCounter = 0
 
     control_solar = True
@@ -28,6 +28,7 @@ class MQTTComm:
         self.connect()
 
     def connect(self):
+
 
         #  def lcon(client, userdata, flags, rc):
         #     # self.on_connect(client,userdata,flags,rc)
@@ -90,6 +91,24 @@ class MQTTComm:
                     self.had_self_state = True
                     self.set_control(msg.payload)
                 self.stateCounter = self.stateCounter + 1
+                self.set_valve(msg.payload)
+            elif tail == "SETCONTROL":
+                self.had_self_state = True  # see below at CONTROLSTATE: avoid setting state again if received from retained message
+                self.set_control(msg.payload)
+            self.slog(msg.topic + " " + str(msg.payload))
+            self.stateCounter = self.stateCounter + 1
+        if head == self.state_topic:
+            if tail == "CONTROLSTATE":
+                if not self.had_self_state:
+                    self.had_self_state = True
+                    self.set_control(msg.payload)
+                self.stateCounter = self.stateCounter + 1
+
+
+
+
+
+
 
     def set_valve(self, towhat):
         if towhat == "HOTTER":
@@ -101,7 +120,6 @@ class MQTTComm:
         elif towhat == "STOP":
             self.relay2State = False
             self.relay1State = False
-
     def set_control(self, towhat):
         if towhat == "OFF":
             self.control_solar = False
@@ -113,7 +131,6 @@ class MQTTComm:
     def sendTemperature(self, sensor_name, value):
         rondvalue = round(value, 1) # dies sensoren sind sowieso nicht so genau ...eine nachkommastelle  reicht
         self.client.publish(path.join(self.sensors_topic, sensor_name), rondvalue)
-
     def send_state(self, message):
         self.client.publish(self.state_topic, message)
 
