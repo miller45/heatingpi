@@ -1,15 +1,30 @@
-import re,os
+import re
+import os
 import time
+import syslog
+
+
 class TempSensors:
     disableSensor1 = False
     disableSensor2 = False
     disableSensor3 = False
     disableSensor4 = False
-    def __init__(self, w1name1, w1name2, wlname3, wlname4):
-        self.sensor1path = "/sys/bus/w1/devices/" + w1name1 + "/w1_slave"
-        self.sensor2path = "/sys/bus/w1/devices/" + w1name2 + "/w1_slave"
-        self.sensor3path = "/sys/bus/w1/devices/" + wlname3 + "/w1_slave"
-        self.sensor4path = "/sys/bus/w1/devices/" + wlname4 + "/w1_slave"
+    disableSensor6 = False  # Five is the arduino temp sensors so we use 6 here to avoid mixup
+
+    last_vals = {}
+    sens_states = {}
+
+    def __init__(self, w1name1, w1name2, wlname3, wlname4, wlname6):
+        basep = "/sys/bus/w1/devices/"
+
+        if 'OVERRIDE_W1_PATH' in os.environ:
+            basep = os.environ['OVERRIDE_W1_PATH']
+
+        self.sensor1path = basep + w1name1 + "/w1_slave"
+        self.sensor2path = basep + w1name2 + "/w1_slave"
+        self.sensor3path = basep + wlname3 + "/w1_slave"
+        self.sensor4path = basep + wlname4 + "/w1_slave"
+        self.sensor6path = basep + wlname6 + "/w1_slave"
 
     def read_temperature1(self):
         ret = "-99"
@@ -20,6 +35,7 @@ class TempSensors:
         except:
             self.disableSensor1 = True
         return ret
+
     def read_temperature2(self):
         ret = "-99"
         if self.disableSensor2:
@@ -50,8 +66,18 @@ class TempSensors:
             self.disableSensor4 = True
         return ret
 
+    def read_temperature6(self):
+        ret = "-99"
+        if self.disableSensor6:
+            return ret
+        try:
+            ret = self.read_sensor(self.sensor6path)
+        except:
+            self.disableSensor6 = True
+        return ret
+
     def read_sensor(self,path):
-        value = "U"
+        value = "-1"
         try:
             f = open(path, "r")
             line = f.readline()
@@ -60,7 +86,16 @@ class TempSensors:
                 m = re.match(r"([0-9a-f]{2} ){9}t=([+-]?[0-9]+)", line)
                 if m:
                     value = str(float(m.group(2)) / 1000.0)
+                    self.last_vals[path] = value
+                    self.sens_states[path] = 1
             f.close()
         except IOError as e:
-            print ("Error reading", path, ": ", e)
+            self.slog("Error reading {}: {}".format(path, e))
+            if path in self.last_vals:
+                value = self.last_vals[path]
+            self.sens_states[path] = 0
         return value
+
+    def slog(self, msg):
+        syslog.syslog(msg)
+        print(msg)
