@@ -6,7 +6,7 @@ class MQTTComm:
     relay1State = False
     relay2State = False
     relay3State = False
-    swState = {}
+    swState={}
     stateCounter = 0
 
     control_solar = True
@@ -21,6 +21,7 @@ class MQTTComm:
         self.stats_topic = path.join("tele", base_topic, "STATS")
         self.controlstate_topic = path.join("tele", base_topic, "STATS")
         self.result_topic = path.join("stat", base_topic, "RESULT")
+        self.lwt_topic = path.join("stat", base_topic, "LWT")
         # self.slog(self.sensors_topic)
 
         self.client = mqtt.Client()
@@ -28,12 +29,14 @@ class MQTTComm:
 
     def connect(self):
 
+
         #  def lcon(client, userdata, flags, rc):
         #     # self.on_connect(client,userdata,flags,rc)
         #     print("Connect with result code " + str(rc))
 
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
+        self.client.will_set(self.lwt_topic, payload="Offline", qos=0, retain=True)
         self.client.connect(self.server_address, 1883, 60)
         self.client.loop_start()
         self.client.subscribe(
@@ -60,6 +63,7 @@ class MQTTComm:
 
     def on_connect(self, client, userdata, flags, rc):
         self.slog("Connect with result code {}".format(rc))
+        self.client.publish(self.lwt_topic, payload="Online", qos=0, retain=True)
 
     def on_message(self, client, userdata, msg):
 
@@ -75,6 +79,18 @@ class MQTTComm:
                 self.relay3State = (msg.payload == "1")
                 self.client.publish(self.result_topic, '{"RELAY3":"' + ("ON" if self.relay3State else "OFF") + '"}')
             elif tail == "VALVE":
+                self.set_valve(msg.payload)
+            elif tail == "SETCONTROL":
+                self.had_self_state = True  # see below at CONTROLSTATE: avoid setting state again if received from retained message
+                self.set_control(msg.payload)
+            self.slog(msg.topic + " " + str(msg.payload))
+            self.stateCounter = self.stateCounter + 1
+        if head == self.state_topic:
+            if tail == "CONTROLSTATE":
+                if not self.had_self_state:
+                    self.had_self_state = True
+                    self.set_control(msg.payload)
+                self.stateCounter = self.stateCounter + 1
                 self.set_valve(msg.payload)
             elif tail == "SETCONTROL":
                 self.had_self_state = True  # see below at CONTROLSTATE: avoid setting state again if received from retained message
@@ -104,7 +120,6 @@ class MQTTComm:
         elif towhat == "STOP":
             self.relay2State = False
             self.relay1State = False
-
     def set_control(self, towhat):
         if towhat == "OFF":
             self.control_solar = False
@@ -116,7 +131,6 @@ class MQTTComm:
     def sendTemperature(self, sensor_name, value):
         rondvalue = round(value, 1) # dies sensoren sind sowieso nicht so genau ...eine nachkommastelle  reicht
         self.client.publish(path.join(self.sensors_topic, sensor_name), rondvalue)
-
     def send_state(self, message):
         self.client.publish(self.state_topic, message)
 
