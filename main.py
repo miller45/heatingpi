@@ -23,11 +23,14 @@ hpConfig.read("config.ini")
 
 # mySens = tempsensors.TempSensors("28-3c01f0964f8c", "28-3c01f0965e56")
 mySens = tempsensors.TempSensors(
+    [
     hpConfig["sensors"]["T1"],
     hpConfig["sensors"]["T2"],
     hpConfig["sensors"]["T3"],
     hpConfig["sensors"]["T4"],
+    "/dummy5",
     hpConfig["sensors"]["T6"]
+    ]
 )
 # mySens = tempsensors.TempSensors("28-0317607252ff", "28-051760bdebff")
 

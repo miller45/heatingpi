@@ -5,75 +5,58 @@ import syslog
 
 
 class TempSensors:
-    disableSensor1 = False
-    disableSensor2 = False
-    disableSensor3 = False
-    disableSensor4 = False
-    disableSensor6 = False  # Five is the arduino temp sensors so we use 6 here to avoid mixup
+                    #  0     1     2     3     4    5     6
+                    # Five is the arduino temp sensors so we use 6 here to avoid mixup
+    disabledSensors = [True] # we dont want to use number 0 so its a dummy
+    sensorpathes = ["/dummy"]
 
     last_vals = {}
     sens_states = {}
 
-    def __init__(self, w1name1, w1name2, wlname3, wlname4, wlname6):
+    recycles = 0
+
+    def __init__(self, wnames):
         basep = "/sys/bus/w1/devices/"
 
         if 'OVERRIDE_W1_PATH' in os.environ:
             basep = os.environ['OVERRIDE_W1_PATH']
+        self.sensorpathes = ["/dummy"]
 
-        self.sensor1path = basep + w1name1 + "/w1_slave"
-        self.sensor2path = basep + w1name2 + "/w1_slave"
-        self.sensor3path = basep + wlname3 + "/w1_slave"
-        self.sensor4path = basep + wlname4 + "/w1_slave"
-        self.sensor6path = basep + wlname6 + "/w1_slave"
+        for n in wnames:
+            self.sensorpathes.append(basep + n + "/w1_slave")
+            self.disabledSensors.append(n == "/dummy")
 
     def read_temperature1(self):
-        ret = "-99"
-        if self.disableSensor1:
-            return ret
-        try: 
-            ret = self.read_sensor(self.sensor1path)
-        except:
-            self.disableSensor1 = True
-        return ret
+        return self.read_temperature_generic(1)
 
     def read_temperature2(self):
-        ret = "-99"
-        if self.disableSensor2:
-            return ret
-        try: 
-            ret = self.read_sensor(self.sensor2path)
-        except:
-            self.disableSensor2 = True
-        return ret
+        return self.read_temperature_generic(2)
 
     def read_temperature3(self):
-        ret = "-99"
-        if self.disableSensor3:
-            return ret
-        try:
-            ret = self.read_sensor(self.sensor3path)
-        except:
-            self.disableSensor3 = True
-        return ret
+        return self.read_temperature_generic(3)
 
     def read_temperature4(self):
-        ret = "-99"
-        if self.disableSensor4:
-            return ret
-        try:
-            ret = self.read_sensor(self.sensor4path)
-        except:
-            self.disableSensor4 = True
-        return ret
+        return self.read_temperature_generic(4)
 
     def read_temperature6(self):
+        return self.read_temperature_generic(6)
+
+    def read_temperature_generic(self, num):
         ret = "-99"
-        if self.disableSensor6:
+        if self.disabledSensors[num]:
             return ret
-        try:
-            ret = self.read_sensor(self.sensor6path)
-        except:
-            self.disableSensor6 = True
+
+        ret = self.read_sensor(self.sensorpathes[num])
+        if ret == "-1":
+            self.disabledSensors[num] = True
+        self.recycles = self.recycles + 1
+        if self.recycles > 60:
+            self.recycles = 0
+            for i in range(1, len(self.disabledSensors)):
+                print(i)
+                self.disabledSensors[i] = False
+
+
         return ret
 
     def read_sensor(self,path):
