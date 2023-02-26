@@ -1,4 +1,9 @@
-import RPi.GPIO as GPIO
+import os
+if 'MOCKGPIO' in os.environ:
+    import Mock.GPIO as GPIO
+else:
+    import RPi.GPIO as GPIO
+
 import syslog
 
 
