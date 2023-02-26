@@ -42,12 +42,12 @@ class TempSensors:
         return self.read_temperature_generic(6)
 
     def read_temperature_generic(self, num):
-        ret = "-99"
+        ret = "-2.99"
         if self.disabledSensors[num]:
             return ret
 
         ret = self.read_sensor(self.sensorpathes[num])
-        if ret == "-1":
+        if ret == "-1.99":
             self.disabledSensors[num] = True
         self.recycles = self.recycles + 1
         if self.recycles > 60:
@@ -60,7 +60,7 @@ class TempSensors:
         return ret
 
     def read_sensor(self,path):
-        value = "-1"
+        value = "-1.98"
         try:
             f = open(path, "r")
             line = f.readline()

@@ -4,6 +4,7 @@ import mqttcom
 import configparser
 import math
 import arduino
+import arduino2
 import time
 import datetime
 import os
@@ -14,6 +15,9 @@ print("Starting HeatingPI V0.5")
 serialp = '/dev/ttyACM0'
 if 'OVERRIDE_SERIAL' in os.environ:
     serialp = os.environ['OVERRIDE_SERIAL']
+serialp2 = '/dev/ttyAMA0'
+if 'OVERRIDE_SERIAL2' in os.environ:
+    serialp2 = os.environ['OVERRIDE_SERIAL2']
 
 ard = arduino.Arduino(serialp)
 
@@ -22,16 +26,17 @@ hpConfig.read("config.ini")
 
 
 # mySens = tempsensors.TempSensors("28-3c01f0964f8c", "28-3c01f0965e56")
-mySens = tempsensors.TempSensors(
-    [
+alls= [
     hpConfig["sensors"]["T1"],
     hpConfig["sensors"]["T2"],
     hpConfig["sensors"]["T3"],
     hpConfig["sensors"]["T4"],
     "/dummy5",
     hpConfig["sensors"]["T6"]
-    ]
-)
+]
+mySens = tempsensors.TempSensors(alls)
+ard2 = arduino2.Arduino2(serialp2, alls)
+
 # mySens = tempsensors.TempSensors("28-0317607252ff", "28-051760bdebff")
 
 relayBoard = valve.Valve()
@@ -127,20 +132,28 @@ def regeln_fussboden_heizung(currtimems):
 
 
 def read_all_temperatures():
-    global mySens, t1, t2, t3, t4, t5, t6
+    global ard2
+    ard2.read_all_temperatures()
+
+
+def collect_all_temperatures():
+    global ard2, t1, t2, t3, t4, t5, t6
     global statread1, temps_ready
     tic = time.clock()
-    t1 = float(mySens.read_temperature1())
-    t2 = float(mySens.read_temperature2())
-    t3 = float(mySens.read_temperature3())
-    t4 = float(mySens.read_temperature4())
-    t6 = float(mySens.read_temperature6())
+    t1 = float(ard2.read_temperature1())
+    t2 = float(ard2.read_temperature2())
+    t3 = float(ard2.read_temperature3())
+    t4 = float(ard2.read_temperature4())
+    t6 = float(ard2.read_temperature6())
     toc = time.clock()
     statread1 = toc - tic
     temps_ready = True
 
+
 # read the temperatur in the "background" without hindering the main loop
-rtemp_timer = repeatedtimer.RepeatedTimer(slow_poll_period / 1000 , read_all_temperatures)
+
+rtemp_timer1 = repeatedtimer.RepeatedTimer(1, read_all_temperatures)
+rtemp_timer2 = repeatedtimer.RepeatedTimer(slow_poll_period / 1000, collect_all_temperatures)
 
 while onon:
 
@@ -220,6 +233,7 @@ while onon:
         print("exception occurred restarting after 1 secs")
         time.sleep(1)
 
-rtemp_timer.stop()
+rtemp_timer1.stop()
+rtemp_timer2.stop()
 relayBoard.cleanup()
 
