@@ -1,6 +1,9 @@
 /*  
  This code reads out PT1000 Temperature Sensor and output results to serial port 
  It needs Adafruit MAX31865 library
+ to compile: arduino-cli compile --fqbn arduino:avr:uno pt1000tempsensorreader.ino
+ to upload : arduino-cli upload -p /dev/ttyACM1 --fqbn arduino:avr:uno pt1000tempsensorreader.ino
+
 */
 
 #include <Adafruit_MAX31865.h>
