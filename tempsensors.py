@@ -53,7 +53,6 @@ class TempSensors:
         if self.recycles > 60:
             self.recycles = 0
             for i in range(1, len(self.disabledSensors)):
-                print(i)
                 self.disabledSensors[i] = False
 
         return ret
