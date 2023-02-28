@@ -1,4 +1,10 @@
-import RPi.GPIO as GPIO
+import os
+
+if 'MOCKGPIO' in os.environ:
+    import Mock.GPIO as GPIO
+else:
+    import RPi.GPIO as GPIO
+
 import syslog
 
 
@@ -10,19 +16,19 @@ class RelayBoard:
     def __init__(self):
         GPIO.setwarnings(True)
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.Relay_Ch1,GPIO.OUT)
-        GPIO.setup(self.Relay_Ch2,GPIO.OUT)
-        GPIO.setup(self.Relay_Ch3,GPIO.OUT)
-        GPIO.output(self.Relay_Ch1,GPIO.HIGH)
-        GPIO.output(self.Relay_Ch2,GPIO.HIGH)
-        GPIO.output(self.Relay_Ch3,GPIO.HIGH)
-    
+        GPIO.setup(self.Relay_Ch1, GPIO.OUT)
+        GPIO.setup(self.Relay_Ch2, GPIO.OUT)
+        GPIO.setup(self.Relay_Ch3, GPIO.OUT)
+        GPIO.output(self.Relay_Ch1, GPIO.HIGH)
+        GPIO.output(self.Relay_Ch2, GPIO.HIGH)
+        GPIO.output(self.Relay_Ch3, GPIO.HIGH)
+
     def switchRelay1On(self):
-        GPIO.output(self.Relay_Ch1,GPIO.LOW) # yes LOW means switching the relay on  weird but it is so
+        GPIO.output(self.Relay_Ch1, GPIO.LOW)  # yes LOW means switching the relay on  weird but it is so
         self.slog("switchRelay1On")
 
     def switchRelay1Off(self):
-        GPIO.output(self.Relay_Ch1,GPIO.HIGH) # yes HIGH means switching the relay off  weird but it is so
+        GPIO.output(self.Relay_Ch1, GPIO.HIGH)  # yes HIGH means switching the relay off  weird but it is so
         self.slog("switchRelay1Off")
 
     def switchRelay2On(self):
