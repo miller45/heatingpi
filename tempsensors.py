@@ -80,9 +80,11 @@ class TempSensors:
 
     def get_disabled_sensors_count(self):
         cnt = 0
+        idx = 0
         for ds in self.disabledSensors:
-            if ds:
+            if ds and not self.sensorpathes[idx].startswith("/dummy"):
                 cnt = cnt + 1
+            idx = idx + 1
         return cnt
 
     def slog(self, msg):
