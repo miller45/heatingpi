@@ -139,8 +139,8 @@ class MQTTComm:
     def send_stats(self, message):
         self.client.publish(self.stats_topic, message)
 
-    def send_debug(self, message):
-        self.client.publish(self.debug_topic, message)
+    def send_debug(self, subtopic, message):
+        self.client.publish(path.join(self.debug_topic, subtopic), message)
 
     def slog(self, msg):
         syslog.syslog(msg)
