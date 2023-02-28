@@ -117,11 +117,13 @@ def regeln_fussboden_heizung(currtimems):
         if FBVor <= FBEntwarnung:
             FBSchlimm = False  # Alarm zuruecksetzen und nicht mehr regeln
             relayBoard.slog("Entwarnung")
+            mqttClient.send_debug("ALARM", "Entwarnung: FB nicht mehr zu heiss FBVor {} <=  FBEntwarnung {}".format(FBVor, FBEntwarnung))
             # mqttClient.set_valve("STOP")
     elif FBVor >= FBZuHeiss:
         FBSchlimm = True
         mqttClient.switchOnOff("51", "OFF")  # pumpe fb heizung
         relayBoard.slog("FB zu heiss")
+        mqttClient.send_debug("ALARM", "FB zu heiss FBVor {} >= FBZuHeiss {}".format(FBVor, FBZuHeiss))
 
         # mqttClient.set_valve("COLDER")
 
@@ -185,6 +187,9 @@ while onon:
                     mqttClient.sendTemperature("SLOWT4", t4)
                     mqttClient.sendTemperature("SLOWT5", t5)
                     mqttClient.sendTemperature("SLOWT6", t6)
+                if not FBSchlimm:
+                    dcnt = mySens.get_disabled_sensors_count()
+                    mqttClient.send_debug("SENSORINFO", "Sensors disabled: {}".format(dcnt))
 
             if lstateCounter != mqttClient.stateCounter:
                 lstateCounter = mqttClient.stateCounter
