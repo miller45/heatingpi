@@ -5,9 +5,9 @@ import syslog
 
 
 class TempSensors:
-                    #  0     1     2     3     4    5     6
-                    # Five is the arduino temp sensors so we use 6 here to avoid mixup
-    disabledSensors = [True] # we dont want to use number 0 so its a dummy
+    #  0     1     2     3     4    5     6
+    # Five is the arduino temp sensors so we use 6 here to avoid mixup
+    disabledSensors = [True]  # we dont want to use number 0 so its a dummy
     sensorpathes = ["/dummy"]
 
     last_vals = {}
@@ -56,10 +56,9 @@ class TempSensors:
                 print(i)
                 self.disabledSensors[i] = False
 
-
         return ret
 
-    def read_sensor(self,path):
+    def read_sensor(self, path):
         value = "-1.98"
         try:
             f = open(path, "r")
@@ -78,6 +77,13 @@ class TempSensors:
                 value = self.last_vals[path]
             self.sens_states[path] = 0
         return value
+
+    def get_disabled_sensors_count(self):
+        cnt = 0
+        for ds in self.disabledSensors:
+            if ds:
+                cnt = cnt + 1
+        return cnt
 
     def slog(self, msg):
         syslog.syslog(msg)

@@ -21,6 +21,7 @@ class MQTTComm:
         self.stats_topic = path.join("tele", base_topic, "STATS")
         self.controlstate_topic = path.join("tele", base_topic, "STATS")
         self.result_topic = path.join("stat", base_topic, "RESULT")
+        self.debug_topic = path.join("tele", base_topic, "DEBUG")
         self.lwt_topic = path.join("stat", base_topic, "LWT")
         # self.slog(self.sensors_topic)
 
@@ -131,11 +132,15 @@ class MQTTComm:
     def sendTemperature(self, sensor_name, value):
         rondvalue = round(value, 1) # dies sensoren sind sowieso nicht so genau ...eine nachkommastelle  reicht
         self.client.publish(path.join(self.sensors_topic, sensor_name), rondvalue)
+
     def send_state(self, message):
         self.client.publish(self.state_topic, message)
 
     def send_stats(self, message):
         self.client.publish(self.stats_topic, message)
+
+    def send_debug(self, message):
+        self.client.publish(self.debug_topic, message)
 
     def slog(self, msg):
         syslog.syslog(msg)
