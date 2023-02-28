@@ -9,7 +9,7 @@ import datetime
 import os
 import repeatedtimer
 
-print("Starting HeatingPI V0.5")
+print("Starting HeatingPI V0.7")
 
 serialp = '/dev/ttyACM0'
 if 'OVERRIDE_SERIAL' in os.environ:
