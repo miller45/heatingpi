@@ -74,6 +74,7 @@ statread2 = 0  # last amount of time to read serially connecte temp sensor
 FBZuHeiss = 30
 if not hpConfig["control"]['fb_too_hot'] is None:
     FBZuHeiss = int(hpConfig["control"]['fb_too_hot'])
+    print("FBZuHeiss ist {0}" ,format(FBZuHeiss))
 
 FBEntwarnung = 25  # Wenn Schlimm ist wird ab dieser Temperature schlimm wieder ausgeschaltet
 FBSchlimm = False  # ist True wenn zu heiss war und noch zurueckgeschraubt werden muss
